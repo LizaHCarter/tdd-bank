@@ -1,3 +1,4 @@
+/*jshint expr:true */
 'use strict';
 
 /*global describe, it*/
@@ -27,6 +28,40 @@ describe('Account', function(){
       acct.deposit(5000);
       expect(acct.bal).to.equal(6500);
       expect(acct.dep).to.have.length(1);
+    });
+  });
+  describe('#withdraw', function(){
+    it('should withdraw money from account', function(){
+      var acct = new Account(3, 'Sara', 5000, 'savings');
+
+      acct.withdraw(2000);
+      expect(acct.bal).to.equal(3000);
+      expect(acct.wit).to.have.length(1);
+    });
+
+    it('should charge a $50 fee when overdrafted', function(){
+      var acct = new Account(3, 'Sara', 5000, 'savings');
+
+      acct.withdraw(5001);
+      expect(acct.bal).to.equal(-51);
+    });
+
+    it('should suspend account after 3 overdrafts',function(){
+      var acct = new Account(3, 'Sara', -150, 'savings');
+
+      acct.withdraw(100);
+      acct.withdraw(250);
+      acct.withdraw(500);
+      expect(acct.isSuspend).to.be.true;
+    });
+    it('should not allow transactions after suspension',function(){
+      var acct = new Account(3, 'Sara', -750, 'savings');
+
+      acct.isSuspend = true;
+      acct.deposit(500);
+
+      expect(acct.isSuspend).to.be.true;
+      expect(acct.bal).to.equal(-750);
     });
   });
 });
